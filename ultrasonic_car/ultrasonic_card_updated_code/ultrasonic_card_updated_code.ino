@@ -3,7 +3,7 @@ const int LeftMotorBackward = 5;
 const int RightMotorForward = 6;
 const int RightMotorBackward = 7;
 
-#define trigPin 6
+#define trigPin 8
 #define echoPin 13
 
 
