@@ -1,88 +1,97 @@
+#include <SoftwareSerial.h>
 
-char value;
+// Bluetooth serial pins
+#define BT_RX 8
+#define BT_TX 9
+
+SoftwareSerial BTSerial(BT_RX, BT_TX); // RX, TX
+
+// Motor control pins
+#define IN1 2
+#define IN2 3
+#define IN3 4
+#define IN4 5
 
 void setup() {
-  pinMode(8,OUTPUT);
-  pinMode(9,OUTPUT);
-  pinMode(10,OUTPUT);
-  pinMode(11,OUTPUT);
+  // Set motor pins as outputs
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  // Start serial communication with Bluetooth
+  BTSerial.begin(9600);  // HC-05 default baud rate
+
+  // Start serial communication with Serial Monitor
   Serial.begin(9600);
-  
- 
-
+  Serial.println("Bluetooth Controlled Bot Ready");
 }
-void forward()
-{
-  digitalWrite(8,HIGH);
-  digitalWrite(9,LOW);
-  digitalWrite(10,HIGH);
-  digitalWrite(11,LOW);
-}
-void backward()
-{
-  digitalWrite(8,LOW);
-  digitalWrite(9,HIGH);
-  digitalWrite(10,LOW);
-  digitalWrite(11,HIGH);
-}
-void right()     // Sharp right trun
-{
-  digitalWrite(8,HIGH);
-  digitalWrite(9,LOW);
-  digitalWrite(10,LOW);
-  digitalWrite(11,HIGH);
-}
-void left()      //sharp left trun
-{
-  digitalWrite(8,LOW);
-  digitalWrite(9,HIGH);
-  digitalWrite(10,HIGH);
-  digitalWrite(11,LOW);
-}
-void stops()
-{
-
- digitalWrite(8,LOW);
-  digitalWrite(9,HIGH);
-  digitalWrite(10,HIGH);
-  digitalWrite(11,LOW);
-  }
-
-
-
 
 void loop() {
-  if(Serial.available()>0){
+  if (BTSerial.available()) {
+    char command = BTSerial.read();
+    Serial.print("Received Command: ");
+    Serial.println(command);
 
-    value = Serial.read();
-    Serial.println(value);
-    if(value=='F')
-    {
-      forward();
-    
+    switch (command) {
+      case 'F':
+        forward();
+        break;
+      case 'B':
+        backward();
+        break;
+      case 'L':
+        turnLeft();
+        break;
+      case 'R':
+        turnRight();
+        break;
+      case 'S':
+        stopMotors();
+        break;
+      default:
+        Serial.println("Unknown command");
+        break;
     }
-    if(value=='B')
-    {
-      backward();
-    
-    }
-    if(value=='R')
-    {
-      right();
-    
-    }
-    if(value=='L')
-    {
-      left();
-    
-    }
-    if(value=='S')
-    {
-      stops();
-    
-    }
-    
   }
- 
+}
 
+void forward() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  Serial.println("Action: Moving Forward");
+}
+
+void backward() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  Serial.println("Action: Moving Backward");
+}
+
+void turnLeft() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  Serial.println("Action: Turning Left");
+}
+
+void turnRight() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  Serial.println("Action: Turning Right");
+}
+
+void stopMotors() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  Serial.println("Action: Stopping");
 }
